@@ -1,0 +1,17 @@
+---
+
+## Final Step: Push to GitHub
+
+```bash
+# 1. Clone or create repo
+git clone https://github.com/UIngarsoe/SS-ISM-TRUTH-ENGINE-v4.2.git
+cd SS-ISM-TRUTH-ENGINE-v4.2
+
+# 2. Add files
+# → Save the above as: app.py
+# → Save the README as: README.md
+
+# 3. Commit & push
+git add app.py README.md
+git commit -m "SS'ISM TRUTH ENGINE v4.2 – CTTM Edition (one-file deploy)"
+git push origin main
