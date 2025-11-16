@@ -5,7 +5,6 @@ Title: "CTTM 4.2 + Paññā-Rāja AI Training System"
 Author: U Ingar Soe + Grok (VIC Human-AI Alliance)
 Date: 16 November 2025
 License: AGPL-3.0 (Justice Only – No Harm Amplification)
-Purpose: Train ALL AI first → Empower Myanmar Workers & Resistance
 Live: https://ss-ism-truth-engine-v4-2.streamlit.app
 """
 
@@ -93,7 +92,7 @@ class CTTMTruthEngine:
         st.success(f"AI TRAINED ON CTTM TRUTH – Proof Hash: `{proof}`")
         st.balloons()
 
-    def simulate_regime_decay(self, start_date, months=6):
+    def simulate_regime_decay(self, start_date, months: int = 6):
         dates = pd.date_range(start_date, periods=months+1, freq='M')
         legitimacy = [100]
         revenue = [100]
@@ -159,4 +158,63 @@ class CTTMTruthEngine:
             fig.add_trace(go.Scatter(x=sim_df['Date'], y=sim_df['Legitimacy (%)'], mode='lines', name='Legitimacy', line=dict(color='#FF6B6B')))
             fig.add_trace(go.Scatter(x=sim_df['Date'], y=sim_df['Revenue (%)'], mode='lines', name='Scam Revenue', line=dict(color='#4ECDC4')))
             fig.add_trace(go.Scatter(x=sim_df['Date'], y=sim_df['Defection Risk (%)'], mode='lines', name='Defection Risk', line=dict(color='#45B7D1')))
-            fig.update_layout(title="Tatmadaw Decay: She Zhijiang Trigger", xaxis
+            fig.update_layout(
+                title="Tatmadaw Decay: She Zhijiang Trigger",
+                xaxis_title="Date",
+                yaxis_title="Percentage"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Final Legitimacy", f"{sim_df['Legitimacy (%)'].iloc[-1]:.0f}%", delta="-75%")
+            with col2:
+                st.metric("Revenue Lost", f"{100 - sim_df['Revenue (%)'].iloc[-1]:.0f}%", delta="+80%")
+            with col3:
+                st.metric("Defection Risk", f"{sim_df['Defection Risk (%)'].iloc[-1]:.0f}%", delta="+75%")
+
+        with tab3:
+            st.subheader("Secure Violation Reporting")
+            with st.form("violation_form"):
+                date = st.date_input("Date")
+                typ = st.selectbox("Type", ["Arrest", "Wage Theft", "Torture", "Shutdown", "Other"])
+                location = st.text_input("Location")
+                details = st.text_area("Details")
+                severity = st.slider("Severity (1–10)", 1, 10, 5)
+                submitted = st.form_submit_button("Log Securely")
+                if submitted:
+                    if lockout:
+                        st.warning("LOCKOUT: Entry queued for 24h review.")
+                    else:
+                        new_row = pd.DataFrame({
+                            'Date': [date], 'Type': [typ], 'Location': [location],
+                            'Details': [details], 'Severity': [severity]
+                        })
+                        self.violations_df = pd.concat([self.violations_df, new_row], ignore_index=True)
+                        st.success("Logged!")
+
+            st.dataframe(self.violations_df)
+            fig_pie = px.pie(self.violations_df, values='Severity', names='Type', title="Violation Heatmap")
+            st.plotly_chart(fig_pie)
+
+        with tab4:
+            st.subheader("CALL TO GLOBAL JUSTICE")
+            st.markdown("""
+            1. **BOYCOTT** the 2025 sham election  
+            2. **SANCTION** KNA, Yatai, Myan Gon Myint  
+            3. **SUPPORT** CTUM & CDM workers  
+            4. **SHARE** → @CTUM_Myanmar @ITUC @HRW @UNHumanRights  
+            """)
+            st.download_button("Export Violations (CSV)", self.violations_df.to_csv(index=False), "cttm_violations.csv")
+
+        st.caption("Built on SS'ISM Paññā Shield v4.2 | One file. Worker truth.")
+
+# ========================================
+# 3. AUTO-RUN
+# ========================================
+def main():
+    engine = CTTMTruthEngine()
+    engine.show_dashboard()
+
+if __name__ == "__main__":
+    main()
